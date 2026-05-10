@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استبانة جرائم القات - عسير وجازان</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+            padding: 25px 30px 40px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #1e3c2c;
+            border-right: 8px solid #2b7a4b;
+            padding-right: 20px;
+            margin-top: 0;
+        }
+        .intro {
+            background: #e9f5ef;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+            color: #1a4d2e;
+            border: 1px solid #cce3d6;
+        }
+        .section { margin: 30px 0 20px; border-bottom: 2px solid #dce5e2; }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f543c;
+            background: #eef4ea;
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+        }
+        .question {
+            background: #ffffff;
+            margin-bottom: 28px;
+            padding: 10px 15px 15px;
+            border-radius: 20px;
+            border: 1px solid #e6edea;
+        }
+        .question-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 8px;
+        }
+        .q-num {
+            background: #2e7d5e;
+            color: white;
+            border-radius: 50px;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .options { padding-right: 15px; }
+        .options label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 16px;
+            border: 1px solid #cbdcd6;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+        .dynamic-field { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cfe3da; }
+        button {
+            background-color: #2b7a4b;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 10px 5px 0 0;
+        }
+        .button-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; justify-content: center; }
+        .btn-secondary { background-color: #5f8b74; }
+        .btn-email { background-color: #2c6e9e; }
+        .btn-sheet { background-color: #0f9d58; }
+        .result-box {
+            background: #f4faf7;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 30px;
+            border: 1px solid #cfe3da;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            direction: ltr;
+            text-align: left;
+        }
+        .footer { font-size: 0.75rem; text-align: center; margin-top: 25px; color: #6b8b7a; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #2e7d5e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📍 استبانة جرائم القات - جنوب المملكة (عسير وجازان)</h1>
+    <div class="intro">
+        <strong>بسم الله الرحمن الرحيم</strong><br>
+        هذه الاستبانة ترسل البيانات مباشرة إلى <strong>Google Sheets</strong> الخاص بالباحث. جميع البيانات الجغرافية (المنطقة، القرية، المركز الحدودي) مهمة جداً للدراسة.
+    </div>
+
+    <form id="surveyForm">
+        <!-- القسم الجغرافي التفصيلي -->
+        <div class="section">
+            <div class="section-title">📍 الموقع الجغرافي التفصيلي</div>
+            <div class="question">
+                <div class="question-text"><span class="q-num">1</span> اسم المنطقة:</div>
+                <div class="options">
+                    <label><input type="radio" name="region" value="عسير" required> عسير</label>
+                    <label><input type="radio" name="region" value="جازان" required> جازان</label>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text"><span class="q-num">2</span> نوع السكن:</div>
+                <div class="options">
+                    <label><input type="radio" name="residenceType" value="مدينة" id="typeCity"> مدينة (حضرية)</label>
+                    <label><input type="radio" name="residenceType" value="قرية" id="typeVillage"> قرية (ريفية)</label>
+                    <label><input type="radio" name="residenceType" value="مركز حدودي" id="typeBorder"> مركز حدودي</label>
+                </div>
+                <div id="cityField" class="dynamic-field" style="display:none;"><label>🏙️ اسم المدينة: </label><input type="text" id="cityName" name="cityName" placeholder="مثال: أبها، جازان، خميس مشيط"></div>
+                <div id="villageField" class="dynamic-field" style="display:none;"><label>🏡 اسم القرية: </label><input type="text" id="villageName" name="villageName" placeholder="مثال: قرية المضايا، العارضة"></div>
+                <div id="borderField" class="dynamic-field" style="display:none;"><label>🛂 اسم المركز الحدودي: </label><input type="text" id="borderName" name="borderName" placeholder="مثال: منفذ الخضراء، علب، الربوعة"></div>
+            </div>
+        </div>
+
+        <!-- بقية الأسئلة (من 3 إلى 17) -->
+        <div class="section"><div class="section-title">👤 البيانات الديموغرافية</div>
+            <div class="question"><div class="question-text"><span class="q-num">3</span> العمر</div><div class="options"><label><input type="radio" name="age" value="أقل من 20"> أقل من 20</label><label><input type="radio" name="age" value="20-35"> 20-35</label><label><input type="radio" name="age" value="36-50"> 36-50</label><label><input type="radio" name="age" value="أكثر من 50"> أكثر من 50</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">4</span> المستوى التعليمي</div><div class="options"><label><input type="radio" name="education" value="أقل من ثانوي"> أقل من ثانوي</label><label><input type="radio" name="education" value="ثانوي"> ثانوي</label><label><input type="radio" name="education" value="جامعي فأعلى"> جامعي فأعلى</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">5</span> الوظيفة (اختياري)</div><input type="text" name="job" placeholder="موظف، طالب، ربة منزل..."></div>
+        </div>
+
+        <div class="section"><div class="section-title">⚠️ الوعي والإدراك</div>
+            <div class="question"><div class="question-text"><span class="q-num">6</span> حجم مشكلة تهريب القات في منطقتك؟</div><div class="options"><label><input type="radio" name="q6" value="كبيرة جدا"> كبيرة جدا</label><label><input type="radio" name="q6" value="كبيرة"> كبيرة</label><label><input type="radio" name="q6" value="متوسطة"> متوسطة</label><label><input type="radio" name="q6" value="صغيرة"> صغيرة</label><label><input type="radio" name="q6" value="لا أعرف"> لا أعرف</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">7</span> أكثر المناطق خطورة للتهريب؟</div><div class="options"><label><input type="radio" name="q7" value="المناطق الجبلية الوعرة"> جبلية وعرة</label><label><input type="radio" name="q7" value="الممرات الحدودية غير الرسمية"> ممرات حدودية غير رسمية</label><label><input type="radio" name="q7" value="القرى النائية"> قرى نائية</label><label><input type="radio" name="q7" value="الطرق الرئيسية"> طرق رئيسية</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">8</span> تغير العمليات الأمنية خلال عامين؟</div><div class="options"><label><input type="radio" name="q8" value="ازدادت بشكل كبير"> ازدادت كثيراً</label><label><input type="radio" name="q8" value="ازدادت قليلاً"> ازدادت قليلاً</label><label><input type="radio" name="q8" value="لم تتغير"> لم تتغير</label><label><input type="radio" name="q8" value="تراجعت"> تراجعت</label></div></div>
+        </div>
+
+        <div class="section"><div class="section-title">🌄 العوامل الجغرافية والاقتصادية</div>
+            <div class="question"><div class="question-text"><span class="q-num">9</span> العوامل الجغرافية المسهلة (اختيار متعدد)</div><div class="options"><label><input type="checkbox" name="geoFactors" value="وعورة التضاريس"> وعورة التضاريس</label><label><input type="checkbox" name="geoFactors" value="طول الحدود مع اليمن"> طول الحدود مع اليمن</label><label><input type="checkbox" name="geoFactors" value="الوديان والطرق الوعرة"> الوديان والطرق الوعرة</label><label><input type="checkbox" name="geoFactors" value="قلة الإضاءة الليلية"> قلة الإضاءة الليلية</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">10</span> العوامل الاقتصادية الدافعة (اختيار متعدد)</div><div class="options"><label><input type="checkbox" name="ecoFactors" value="ارتفاع البطالة"> ارتفاع البطالة</label><label><input type="checkbox" name="ecoFactors" value="ضعف الرقابة المالية"> ضعف الرقابة على الأموال</label><label><input type="checkbox" name="ecoFactors" value="أرباح سريعة"> أرباح سريعة</label><label><input type="checkbox" name="ecoFactors" value="ظروف المهرّبين الصعبة"> ظروف المهرّبين الصعبة</label></div></div>
+        </div>
+
+        <div class="section"><div class="section-title">👪 الآثار الاجتماعية</div>
+            <div class="question"><div class="question-text"><span class="q-num">11</span> أكثر الأثر سلبياً على المجتمع؟</div><div class="options"><label><input type="radio" name="q11" value="العنف الأسري"> العنف الأسري</label><label><input type="radio" name="q11" value="البطالة والإهمال"> بطالة وإهمال وظيفي</label><label><input type="radio" name="q11" value="ضعف التحصيل الدراسي"> ضعف تحصيل دراسي</label><label><input type="radio" name="q11" value="أمراض نفسية وجسدية"> أمراض نفسية وجسدية</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">12</span> وجود أماكن معروفة لبيع القات؟</div><div class="options"><label><input type="radio" name="q12" value="نعم بكثرة"> نعم بكثرة</label><label><input type="radio" name="q12" value="نعم قليلة"> نعم قليلة</label><label><input type="radio" name="q12" value="لا توجد"> لا توجد</label><label><input type="radio" name="q12" value="لا أعرف"> لا أعرف</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">13</span> انتشار التهريب جغرافياً؟</div><div class="options"><label><input type="radio" name="q13" value="تتركز بالنقاط الحدودية"> تتركز بالنقاط الحدودية</label><label><input type="radio" name="q13" value="تنتشر بالجنوب كله"> تنتشر بالمنطقة الجنوبية كلها</label><label><input type="radio" name="q13" value="في مدن داخلية"> في مدن داخلية بعيدة عن الحدود</label></div></div>
+        </div>
+
+        <div class="section"><div class="section-title">⚖️ تقييم العقوبات والإجراءات</div>
+            <div class="question"><div class="question-text"><span class="q-num">14</span> فعالية العقوبات الحالية (سجن، غرامة، إعدام)؟</div><div class="options"><label><input type="radio" name="q14" value="فعالة جدا"> فعالة جدا</label><label><input type="radio" name="q14" value="فعالة إلى حد ما"> فعالة إلى حد ما</label><label><input type="radio" name="q14" value="غير فعالة"> غير فعالة</label><label><input type="radio" name="q14" value="لا رأي"> لا رأي</label></div></div>
+            <div class="question"><div class="question-text"><span class="q-num">15</span> أفضل إجراء للمناطق الجبلية؟</div><div class="options"><label><input type="radio" name="q15" value="زيادة الدوريات"> زيادة الدوريات</label><label><input type="radio" name="q15" value="تقنيات حديثة"> تقنيات حديثة (طائرات، كاميرات)</label><label><input type="radio" name="q15" value="حواجز حدودية"> حواجز حدودية في الأودية</label><label><input type="radio" name="q15" value="تنمية اقتصادية"> تنمية اقتصادية لتوفير بدائل</label></div></div>
+        </div>
+
+        <div class="section"><div class="section-title">✍️ أسئلة مفتوحة</div>
+            <div class="question"><div class="question-text"><span class="q-num">16</span> اقتراح إجراء خاص بجغرافية الجنوب لمكافحة التهريب</div><textarea name="q16" rows="2"></textarea></div>
+            <div class="question"><div class="question-text"><span class="q-num">17</span> علاقة الكثافة السكانية / المسافة عن المركز الأمني بالتهريب؟</div><textarea name="q17" rows="2"></textarea></div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" id="viewDataBtn">📋 عرض البيانات</button>
+            <button type="button" id="emailBtn" class="btn-email">📧 إرسال بالبريد</button>
+            <button type="button" id="downloadBtn" class="btn-secondary">💾 تحميل JSON</button>
+            <button type="button" id="sheetBtn" class="btn-sheet">📤 إرسال إلى Google Sheets</button>
+        </div>
+    </form>
+
+    <div id="resultArea" class="result-box" style="display: none;">
+        <strong>📊 البيانات المجمعة:</strong><br>
+        <pre id="jsonOutput" style="background:#ecf7f1; padding:10px; border-radius:12px;"></pre>
+        <button id="copyJsonBtn" style="background:#3f6a58; margin-top:8px;">📋 نسخ النص</button>
+    </div>
+    <div class="footer">جميع البيانات محمية. عند الإرسال إلى Google Sheets، تظهر رسالة تأكيد.</div>
+</div>
+
+<div id="toastMsg" class="toast"></div>
+
+<script>
+    // إظهار حقول المواقع حسب نوع السكن
+    const typeCity = document.getElementById('typeCity');
+    const typeVillage = document.getElementById('typeVillage');
+    const typeBorder = document.getElementById('typeBorder');
+    const cityDiv = document.getElementById('cityField');
+    const villageDiv = document.getElementById('villageField');
+    const borderDiv = document.getElementById('borderField');
+
+    function toggleFields() {
+        cityDiv.style.display = 'none';
+        villageDiv.style.display = 'none';
+        borderDiv.style.display = 'none';
+        if (typeCity.checked) cityDiv.style.display = 'block';
+        else if (typeVillage.checked) villageDiv.style.display = 'block';
+        else if (typeBorder.checked) borderDiv.style.display = 'block';
+    }
+    typeCity.addEventListener('change', toggleFields);
+    typeVillage.addEventListener('change', toggleFields);
+    typeBorder.addEventListener('change', toggleFields);
+
+    // جمع البيانات
+    function collectData() {
+        let data = {};
+        data.region = document.querySelector('input[name="region"]:checked')?.value || '';
+        let resType = document.querySelector('input[name="residenceType"]:checked')?.value;
+        data.residenceType = resType || '';
+        if (resType === 'مدينة') data.cityName = document.getElementById('cityName').value.trim();
+        else if (resType === 'قرية') data.villageName = document.getElementById('villageName').value.trim();
+        else if (resType === 'مركز حدودي') data.borderCenterName = document.getElementById('borderName').value.trim();
+
+        data.age = document.querySelector('input[name="age"]:checked')?.value;
+        data.education = document.querySelector('input[name="education"]:checked')?.value;
+        data.job = document.querySelector('input[name="job"]')?.value || '';
+        data.q6 = document.querySelector('input[name="q6"]:checked')?.value;
+        data.q7 = document.querySelector('input[name="q7"]:checked')?.value;
+        data.q8 = document.querySelector('input[name="q8"]:checked')?.value;
+        data.q11 = document.querySelector('input[name="q11"]:checked')?.value;
+        data.q12 = document.querySelector('input[name="q12"]:checked')?.value;
+        data.q13 = document.querySelector('input[name="q13"]:checked')?.value;
+        data.q14 = document.querySelector('input[name="q14"]:checked')?.value;
+        data.q15 = document.querySelector('input[name="q15"]:checked')?.value;
+
+        let geo = [];
+        document.querySelectorAll('input[name="geoFactors"]:checked').forEach(cb => geo.push(cb.value));
+        data.geographicalFactors = geo.join(', ');
+        let eco = [];
+        document.querySelectorAll('input[name="ecoFactors"]:checked').forEach(cb => eco.push(cb.value));
+        data.economicFactors = eco.join(', ');
+
+        data.q16 = document.querySelector('textarea[name="q16"]')?.value || '';
+        data.q17 = document.querySelector('textarea[name="q17"]')?.value || '';
+        data.timestamp = new Date().toLocaleString('ar-SA');
+        return data;
+    }
+
+    // التحقق من الإجابات الأساسية
+    function validateRequired() {
+        if (!document.querySelector('input[name="region"]:checked')) { alert("الرجاء اختيار المنطقة (عسير/جازان)"); return false; }
+        let resType = document.querySelector('input[name="residenceType"]:checked');
+        if (!resType) { alert("الرجاء اختيار نوع السكن (مدينة/قرية/مركز حدودي)"); return false; }
+        let type = resType.value;
+        if (type === 'مدينة' && document.getElementById('cityName').value.trim() === '') { alert("أدخل اسم المدينة"); return false; }
+        if (type === 'قرية' && document.getElementById('villageName').value.trim() === '') { alert("أدخل اسم القرية"); return false; }
+        if (type === 'مركز حدودي' && document.getElementById('borderName').value.trim() === '') { alert("أدخل اسم المركز الحدودي"); return false; }
+        return true;
+    }
+
+    // عرض البيانات
+    const resultDiv = document.getElementById('resultArea');
+    const jsonPre = document.getElementById('jsonOutput');
+
+    document.getElementById('viewDataBtn').addEventListener('click', () => {
+        if (!validateRequired()) return;
+        const data = collectData();
+        jsonPre.textContent = JSON.stringify(data, null, 2);
+        resultDiv.style.display = 'block';
+    });
+    document.getElementById('copyJsonBtn')?.addEventListener('click', () => {
+        if (jsonPre.textContent) {
+            navigator.clipboard.writeText(jsonPre.textContent);
+            alert("تم نسخ JSON");
+        } else alert("لا توجد بيانات لعرضها أولاً");
+    });
+
+    // إرسال بالبريد
+    document.getElementById('emailBtn').addEventListener('click', () => {
+        if (!validateRequired()) return;
+        const data = collectData();
+        const jsonString = JSON.stringify(data, null, 2);
+        const subject = encodeURIComponent("استبانة جرائم القات - بيانات جغرافية");
+        const body = encodeURIComponent("البيانات:\n\n" + jsonString);
+        window.location.href = `mailto: researcher@example.com?subject=${subject}&body=${body}`;
+    });
+
+    // تحميل JSON
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+        if (!validateRequired()) return;
+        const data = collectData();
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `survey_qat_${new Date().toISOString().slice(0,19)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // إرسال إلى Google Sheets (باستخدام الرابط المضمن)
+    // الرابط الذي نسخته من Apps Script
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtfd2vsqlhHY_OnZ4VRIfHnjd3hHgRlzcpzXK0e1y422LQvm6EuY1WjSA0KIvQVuxVQw/exec';
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = message;
+        toast.style.backgroundColor = isError ? '#c62828' : '#2e7d5e';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    document.getElementById('sheetBtn').addEventListener('click', async () => {
+        if (!validateRequired()) return;
+        const data = collectData();
+        
+        const btn = document.getElementById('sheetBtn');
+        btn.disabled = true;
+        btn.textContent = 'جاري الإرسال...';
+        
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            showToast('✓ تم إرسال البيانات إلى Google Sheets بنجاح', false);
+        } catch (error) {
+            console.error(error);
+            showToast('❌ فشل الإرسال. تأكد من الرابط والاتصال بالإنترنت', true);
+        } finally {
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '📤 إرسال إلى Google Sheets';
+            }, 2000);
+        }
+    });
+</script>
+</body>
+</html>
